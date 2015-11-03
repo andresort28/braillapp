@@ -44,7 +44,7 @@ public class CargaTweets extends AppCompatActivity {
         // se pasa a la activity de no hay tweets.
 
         if(true){
-            Intent newfront = new Intent(CargaTweets.this, CargaTweets.class);
+            Intent newfront = new Intent(CargaTweets.this, BrailleScreen.class);
             startActivity(newfront);
         }else{
             Intent newfront = new Intent(CargaTweets.this, NoHayTweets.class);
