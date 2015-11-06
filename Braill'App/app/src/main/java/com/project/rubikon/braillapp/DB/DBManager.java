@@ -19,17 +19,13 @@ public class DBManager extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db)
     {
-        db.execSQL(DBTweet.CREATE_TABLE);
-        db.execSQL(DBTranslation.CREATE_TABLE);
-        db.execSQL(DBAsciiCharacter.CREATE_TABLE);
+        db.execSQL(DBValues.CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     {
-        db.execSQL(DBTweet.DROP_TABLE);
-        db.execSQL(DBTranslation.DROP_TABLE);
-        db.execSQL(DBAsciiCharacter.DROP_TABLE);
+        db.execSQL(DBValues.DROP_TABLE);
 
         onCreate(db);
     }
