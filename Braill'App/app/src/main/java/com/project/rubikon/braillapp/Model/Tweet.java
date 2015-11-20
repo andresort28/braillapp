@@ -5,7 +5,12 @@ package com.project.rubikon.braillapp.Model;
  */
 public class Tweet {
 
-    private String tweet, traduccion;
+    private String tweet, translation;
+
+    public Tweet(String tweet){
+        this.tweet = tweet;
+        translation=translate();
+    }
 
     public String getTweet() {
         return tweet;
@@ -16,10 +21,32 @@ public class Tweet {
     }
 
     public String getTraduccion() {
-        return traduccion;
+        return translation;
     }
 
-    public void setTraduccion(String traduccion) {
-        this.traduccion = traduccion;
+    public void setTraduccion(String translation) {
+        this.translation = translation;
+    }
+
+    public String translate(){
+        String braille = "";
+        String tweetUpperCase = tweet.toUpperCase();
+        char[] characters = tweetUpperCase.toCharArray();
+
+        for (int i = 0; i < characters.length; i++) {
+
+            for (int j = 0; j < AsciiCharacter.CHARACTERS.length; j++) {
+
+                if (characters[i]==(char)AsciiCharacter.CHARACTERS[j])
+
+                    braille+=AsciiCharacter.BINARIES[j];
+
+                else
+
+                    braille+=AsciiCharacter.BINARIES[0];
+            }
+        }
+
+        return braille;
     }
 }

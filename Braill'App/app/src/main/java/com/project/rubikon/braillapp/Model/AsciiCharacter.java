@@ -1,7 +1,7 @@
 package com.project.rubikon.braillapp.Model;
 
 /**
- * Created by pregrado on 12/11/2015.
+ * Created by jfelipeescobart on 12/11/2015.
  */
 public final class AsciiCharacter {
 
