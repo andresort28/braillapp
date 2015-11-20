@@ -37,16 +37,13 @@ public class Tweet {
 
             for (int j = 0; j < AsciiCharacter.CHARACTERS.length; j++) {
 
-                if (characters[i]==(char)AsciiCharacter.CHARACTERS[j])
+                if (characters[i]==(char)AsciiCharacter.CHARACTERS[j]) {
 
-                    braille+=AsciiCharacter.BINARIES[j];
-
-                else
-
-                    braille+=AsciiCharacter.BINARIES[0];
+                    braille += AsciiCharacter.BINARIES[j];
+                    break;
+                }
             }
         }
-
         return braille;
     }
 }
