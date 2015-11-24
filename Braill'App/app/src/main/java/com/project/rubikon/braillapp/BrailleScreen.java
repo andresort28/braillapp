@@ -13,6 +13,14 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import twitter4j.ResponseList;
+import twitter4j.Status;
+import twitter4j.TwitterAdapter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterListener;
+import twitter4j.TwitterMethod;
+import com.project.rubikon.braillapp.Model.Tweet;
+
 public class BrailleScreen extends AppCompatActivity {
 
     private RelativeLayout touchview;
@@ -24,12 +32,16 @@ public class BrailleScreen extends AppCompatActivity {
 
     private static int defaultStates[];
 
-    private String segment = "100000110000100100100110100010110100110110110000";
+    private static Tweet tweety;
+    private static String[] listaTweets= new String[20];
+    private static String segment = "100000110000100100100110100010110100110110110000";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_braille_screen);
+
+        TweetRepository.getInstance().getTimelineAsync(timelineListener); // => timelineListener
 
         touchview = (RelativeLayout) findViewById(R.id.braille);
         defaultStates = findViewById(R.id.dot1).getBackground().getState();
@@ -82,6 +94,40 @@ public class BrailleScreen extends AppCompatActivity {
         };
 
         touchview.setOnTouchListener(t);
+    }
+
+    // Esta clase interna es la encargada de manejar el callback,  tiene dos métodos para manejar la posibilidad de éxito y de error.
+    TwitterListener timelineListener = new TwitterAdapter() {
+
+        @Override
+        public void gotHomeTimeline(ResponseList<Status> statuses) {
+            showTimeline(statuses);
+        }
+
+        @Override
+        public void onException(TwitterException te, TwitterMethod method) {
+            //showError();
+        }
+
+        @Override
+        public void gotUserTimeline(ResponseList<Status> statuses) {
+            showTimeline(statuses);
+        }
+
+    };
+
+
+    private void showTimeline(ResponseList<Status> statuses) {
+        // Creamos un array de Strings con el texto de los Status( Tweets )
+        String[] tweets = new String[statuses.size()];
+        int counter = 0;
+        for (Status status : statuses) {
+            tweets[counter] = status.getText();
+            tweety = new Tweet(tweets[counter].split("http")[0].toString());
+            listaTweets[counter]=tweety.getTraduccion();
+            Log.e("tweets: ", tweets[counter].split("http")[0].toString());
+            counter++;
+        }
     }
 
     public void updateBrailleScreen ( String segment ) {
