@@ -6,6 +6,7 @@ import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -23,7 +24,7 @@ import com.project.rubikon.braillapp.Model.Tweet;
 
 import java.util.ArrayList;
 
-public class BrailleScreenActivity extends AppCompatActivity {
+public class BrailleScreenActivity extends AppCompatActivity  implements GestureDetector.OnDoubleTapListener{
 
     private RelativeLayout touchview;
     private int count;
@@ -40,8 +41,8 @@ public class BrailleScreenActivity extends AppCompatActivity {
     private static Tweet tweety;
     private static ArrayList[] listaTweets= new ArrayList[20];
     private String segment="1000101010001010100101101011010100001010100000110001010101";
-    int tweetCounter; //Columnas del array de arraylist que es un tweet con su lista de paginas
-    int segmentCounter;  // Filas que son las paginas de un tweet
+    int tweetCounter = 0; //Columnas del array de arraylist que es un tweet con su lista de paginas
+    int segmentCounter = 0;  // Filas que son las paginas de un tweet
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +66,8 @@ public class BrailleScreenActivity extends AppCompatActivity {
             }
         };
 
+
+
         View.OnTouchListener t = new View.OnTouchListener() {
 
             @Override
@@ -73,6 +76,7 @@ public class BrailleScreenActivity extends AppCompatActivity {
                 int x = (int) event.getX();
                 int y = (int) event.getY();
                 count++;
+
 
                 if(!lock){
                     switch (event.getActionMasked()){
@@ -182,6 +186,53 @@ public class BrailleScreenActivity extends AppCompatActivity {
         return (x <= x2 && x >= x1 && y <= y2 && y >= y1);
     }
 
+    public void prevPage(){
+        if(segmentCounter==0){
+            ArrayList currentTweet = listaTweets[tweetCounter];
+            updateBrailleScreen((String) currentTweet.get(segmentCounter));
+        }else {
+            segmentCounter--;
+            ArrayList currentTweet = listaTweets[tweetCounter];
+            updateBrailleScreen((String) currentTweet.get(segmentCounter));
+        }
+    }
+
+    public void nextPage(){
+        if(segmentCounter==listaTweets[tweetCounter].size()){
+            ArrayList currentTweet = listaTweets[tweetCounter];
+            updateBrailleScreen((String) currentTweet.get(segmentCounter));
+        }else {
+            segmentCounter++;
+            ArrayList currentTweet = listaTweets[tweetCounter];
+            updateBrailleScreen((String) currentTweet.get(segmentCounter));
+        }
+    }
+    public void prevTweet() {
+        if(tweetCounter==0){
+            segmentCounter = 0;
+            ArrayList currentTweet = listaTweets[tweetCounter];
+            updateBrailleScreen((String) currentTweet.get(segmentCounter));
+        }else {
+            tweetCounter--;
+            segmentCounter = 0;
+            ArrayList currentTweet = listaTweets[tweetCounter];
+            updateBrailleScreen((String) currentTweet.get(segmentCounter));
+        }
+    }
+
+    public void nextTweet() {
+        if(tweetCounter==20){
+            ArrayList currentTweet = listaTweets[tweetCounter];
+            updateBrailleScreen((String) currentTweet.get(segmentCounter));
+        }else {
+            tweetCounter++;
+            segmentCounter = 0;
+            ArrayList currentTweet = listaTweets[tweetCounter];
+            updateBrailleScreen((String) currentTweet.get(segmentCounter));
+        }
+    }
+
+
     public void pasarTweet(){
 
         // va a haber una variable bandera que va a indicar si esta la pantalla bloqueada
@@ -256,4 +307,20 @@ public class BrailleScreenActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    public boolean onSingleTapConfirmed(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTap(MotionEvent e) {
+        lock=!lock;
+        Log.d("doubleTap", lock+"");
+        return false;
+    }
+
+    @Override
+    public boolean onDoubleTapEvent(MotionEvent e) {
+        return false;
+    }
 }
