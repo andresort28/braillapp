@@ -2,11 +2,14 @@ package com.project.rubikon.braillapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.gesture.GestureOverlayView;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.GestureDetector.OnDoubleTapListener;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -24,7 +27,7 @@ import com.project.rubikon.braillapp.Model.Tweet;
 
 import java.util.ArrayList;
 
-public class BrailleScreenActivity extends AppCompatActivity  implements GestureDetector.OnDoubleTapListener{
+public class BrailleScreenActivity extends AppCompatActivity  implements GestureDetector.OnGestureListener{
 
     private RelativeLayout touchview;
     private int count;
@@ -37,8 +40,9 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
                     | android.R.attr.state_enabled };
 
     private static int defaultStates[];
-
+    private GestureDetector gd;
     private static Tweet tweety;
+    private static String[] listTweets;
     private static ArrayList[] listaTweets= new ArrayList[20];
     private String segment="1000101010001010100101101011010100001010100000110001010101";
     int tweetCounter = 0; //Columnas del array de arraylist que es un tweet con su lista de paginas
@@ -50,11 +54,44 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
         Log.d("TAG-RUBIKON", "BrailleScreenActivity created");
 
         setContentView(R.layout.layout_braille_screen);
-        TweetRepository.getInstance().getTimelineAsync(timelineListener); // => timelineListener
+
         touchview = (RelativeLayout) findViewById(R.id.braille);
         defaultStates = findViewById(R.id.dot1).getBackground().getState();
-        updateBrailleScreen(segment);
-        //updateBrailleScreen((String)listaTweets[tweetCounter].get(segmentCounter));
+        Thread closeActivity = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    Thread.sleep(10000);
+                    // Do some stuff
+                } catch (Exception e) {
+                    e.getLocalizedMessage();
+                }
+            }
+        });
+        TweetRepository.getInstance().getTimelineAsync(timelineListener); // => timelineListener
+        //updateBrailleScreen((String) listaTweets[tweetCounter].get(segmentCounter));
+        gd = new GestureDetector(this);
+
+        //set the on Double tap listener
+        gd.setOnDoubleTapListener(new OnDoubleTapListener(){
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                lock=!lock;
+                Log.d("doubleTap", lock+"");
+                return false;
+            }
+
+            @Override
+            public boolean onDoubleTapEvent(MotionEvent e) {
+                return false;
+            }
+        });
 
 
         final View.OnClickListener clickListener = new View.OnClickListener() {
@@ -72,6 +109,8 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
 
             @Override
             public boolean onTouch(View view, MotionEvent event) {
+
+                gd.onTouchEvent(event);
 
                 int x = (int) event.getX();
                 int y = (int) event.getY();
@@ -95,17 +134,24 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
 
                             if(Math.abs(diffX) > Math.abs(diffY))
                             {
-                                if(diffX > 0)
+                                if(diffX > 0) {
+                                    prevTweet();
                                     Log.d("TAG-RUBIKON", "Left");
-                                else
+                                }else {
+                                    nextTweet();
                                     Log.d("TAG-RUBIKON", "Right");
+                                }
                             }
                             else
                             {
-                                if(diffY > 0)
+                                if(diffY > 0){
+                                    prevPage();
                                     Log.d("TAG-RUBIKON", "Up");
-                                else
+                                } else{
+                                    nextPage();
                                     Log.d("TAG-RUBIKON", "Down");
+                                }
+
                             }
                             break;
                         }
@@ -144,19 +190,7 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
 
     }
 
-    private void showTimeline(ResponseList<Status> statuses)
-    {
-        // Creamos un array de Strings con el texto de los Status( Tweets )
-        String[] tweets = new String[statuses.size()];
-        int counter = 0;
-        for (Status status : statuses) {
-            tweets[counter] = status.getText();
-            tweety = new Tweet(tweets[counter].split("http")[0].toString());
-            listaTweets[counter]= tweety.getTraslation();
-            Log.d("TAG-RUBIKON", "Tweets: " + tweets[counter].split("http")[0].toString());
-            counter++;
-        }
-    }
+
 
     public void updateBrailleScreen ( String segment ) {
 
@@ -187,7 +221,7 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
     }
 
     public void prevPage(){
-        if(segmentCounter==0){
+        if(segmentCounter>=0){
             ArrayList currentTweet = listaTweets[tweetCounter];
             updateBrailleScreen((String) currentTweet.get(segmentCounter));
         }else {
@@ -198,7 +232,7 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
     }
 
     public void nextPage(){
-        if(segmentCounter==listaTweets[tweetCounter].size()){
+        if(segmentCounter==listaTweets[tweetCounter].size()-1){
             ArrayList currentTweet = listaTweets[tweetCounter];
             updateBrailleScreen((String) currentTweet.get(segmentCounter));
         }else {
@@ -221,7 +255,7 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
     }
 
     public void nextTweet() {
-        if(tweetCounter==20){
+        if(tweetCounter<=20){
             ArrayList currentTweet = listaTweets[tweetCounter];
             updateBrailleScreen((String) currentTweet.get(segmentCounter));
         }else {
@@ -289,6 +323,54 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
         return super.onOptionsItemSelected(item);
     }
 
+
+
+
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return false;
+    }
+    private void showTimeline(ResponseList<Status> statuses)
+    {
+        // Creamos un array de Strings con el texto de los Status( Tweets )
+        String[] tweets = new String[statuses.size()];
+        int counter = 0;
+        for (Status status : statuses) {
+            tweets[counter] = status.getText();
+            tweety = new Tweet(tweets[counter].split("http")[0].toString());
+            listaTweets[counter]= tweety.getTraslation();
+            Log.d("TAG-RUBIKON", "Tweets: " + tweets[counter].split("http")[0].toString());
+            counter++;
+        }
+
+
+    }
     // Esta clase interna es la encargada de manejar el callback,  tiene dos m�todos para manejar la posibilidad de �xito y de error.
     TwitterListener timelineListener = new TwitterAdapter() {
 
@@ -306,21 +388,4 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
             showTimeline(statuses);
         }
     };
-
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onDoubleTap(MotionEvent e) {
-        lock=!lock;
-        Log.d("doubleTap", lock+"");
-        return false;
-    }
-
-    @Override
-    public boolean onDoubleTapEvent(MotionEvent e) {
-        return false;
-    }
 }
