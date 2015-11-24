@@ -5,13 +5,12 @@ package com.project.rubikon.braillapp.Model;
  */
 public final class AsciiCharacter {
 
-    protected static int[] characters()
-    {
+    protected static int[] characters() {
         int[] values = new int[64];
 
-        int index=0;
+        int index = 0;
 
-        for (int i = 32; i <= 95 ; i++) {
+        for (int i = 32; i <= 95; i++) {
 
             values[index] = i;
             index++;

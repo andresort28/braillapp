@@ -4,11 +4,12 @@ import android.content.Intent;
 import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class ScreenSplash extends ActionBarActivity {
+public class ScreenSplashActivity extends ActionBarActivity {
 
 
     public static final int seconds=3;
@@ -18,7 +19,9 @@ public class ScreenSplash extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_screen_splash);
+        Log.d("TAG-RUBIKON", "ScreenSplashActivity created");
+        setContentView(R.layout.layout_screen_splash);
+        Log.d("RUBIKON", "ScreenSplashActivity created");
         empezaranimacion();
     }
 
@@ -54,7 +57,7 @@ public class ScreenSplash extends ActionBarActivity {
 
             @Override
             public void onFinish() {
-                Intent newfront = new Intent(ScreenSplash.this, CargaTweets.class);
+                Intent newfront = new Intent(ScreenSplashActivity.this, LoadTweetsActivity.class);
                 startActivity(newfront);
                 finish();
             }

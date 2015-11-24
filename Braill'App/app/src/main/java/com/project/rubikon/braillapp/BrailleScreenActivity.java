@@ -23,7 +23,7 @@ import com.project.rubikon.braillapp.Model.Tweet;
 
 import java.util.ArrayList;
 
-public class BrailleScreen extends AppCompatActivity {
+public class BrailleScreenActivity extends AppCompatActivity {
 
     private RelativeLayout touchview;
     private int count;
@@ -46,7 +46,9 @@ public class BrailleScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_braille_screen);
+        Log.d("TAG-RUBIKON", "BrailleScreenActivity created");
+
+        setContentView(R.layout.layout_braille_screen);
         TweetRepository.getInstance().getTimelineAsync(timelineListener); // => timelineListener
         touchview = (RelativeLayout) findViewById(R.id.braille);
         defaultStates = findViewById(R.id.dot1).getBackground().getState();
@@ -62,9 +64,6 @@ public class BrailleScreen extends AppCompatActivity {
                 vib.vibrate(100);
             }
         };
-
-
-
 
         View.OnTouchListener t = new View.OnTouchListener() {
 
@@ -93,16 +92,16 @@ public class BrailleScreen extends AppCompatActivity {
                             if(Math.abs(diffX) > Math.abs(diffY))
                             {
                                 if(diffX > 0)
-                                    Log.e("# " + count + ":Dir", "Left");
+                                    Log.d("TAG-RUBIKON", "Left");
                                 else
-                                    Log.e("# " + count + ":Dir", "Right");
+                                    Log.d("TAG-RUBIKON", "Right");
                             }
                             else
                             {
                                 if(diffY > 0)
-                                    Log.e("# " + count + ":Dir", "Up");
+                                    Log.d("TAG-RUBIKON", "Up");
                                 else
-                                    Log.e("# " + count + ":Dir", "Down");
+                                    Log.d("TAG-RUBIKON", "Down");
                             }
                             break;
                         }
@@ -133,7 +132,7 @@ public class BrailleScreen extends AppCompatActivity {
                     }
                 }
                 return true;
-            };
+            }
         };
 
 
@@ -141,36 +140,16 @@ public class BrailleScreen extends AppCompatActivity {
 
     }
 
-    // Esta clase interna es la encargada de manejar el callback,  tiene dos métodos para manejar la posibilidad de éxito y de error.
-    TwitterListener timelineListener = new TwitterAdapter() {
-
-        @Override
-        public void gotHomeTimeline(ResponseList<Status> statuses) {
-            showTimeline(statuses);
-        }
-
-        @Override
-        public void onException(TwitterException te, TwitterMethod method) {
-            //showError();
-        }
-
-        @Override
-        public void gotUserTimeline(ResponseList<Status> statuses) {
-            showTimeline(statuses);
-        }
-
-    };
-
-
-    private void showTimeline(ResponseList<Status> statuses) {
+    private void showTimeline(ResponseList<Status> statuses)
+    {
         // Creamos un array de Strings con el texto de los Status( Tweets )
         String[] tweets = new String[statuses.size()];
         int counter = 0;
         for (Status status : statuses) {
             tweets[counter] = status.getText();
             tweety = new Tweet(tweets[counter].split("http")[0].toString());
-            listaTweets[counter]=(ArrayList<String>)tweety.getTraduccion();
-            Log.e("tweets: ", tweets[counter].split("http")[0].toString());
+            listaTweets[counter]= tweety.getTraslation();
+            Log.d("TAG-RUBIKON", "Tweets: " + tweets[counter].split("http")[0].toString());
             counter++;
         }
     }
@@ -203,29 +182,6 @@ public class BrailleScreen extends AppCompatActivity {
         return (x <= x2 && x >= x1 && y <= y2 && y >= y1);
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_braille_screen, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     public void pasarTweet(){
 
         // va a haber una variable bandera que va a indicar si esta la pantalla bloqueada
@@ -249,17 +205,55 @@ public class BrailleScreen extends AppCompatActivity {
             if(true){
 
 
-                Intent newfront = new Intent(BrailleScreen.this, CargaTweets.class);
+                Intent newfront = new Intent(BrailleScreenActivity.this, LoadTweetsActivity.class);
                 startActivity(newfront);
             }
 
 
-            Intent newfront = new Intent(BrailleScreen.this, BrailleScreen.class);
+            Intent newfront = new Intent(BrailleScreenActivity.this, BrailleScreenActivity.class);
             startActivity(newfront);
         }
-
-
-
-
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_braille_screen, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Esta clase interna es la encargada de manejar el callback,  tiene dos mï¿½todos para manejar la posibilidad de ï¿½xito y de error.
+    TwitterListener timelineListener = new TwitterAdapter() {
+
+        @Override
+        public void gotHomeTimeline(ResponseList<Status> statuses) {
+            showTimeline(statuses);
+        }
+
+        @Override
+        public void onException(TwitterException te, TwitterMethod method) {
+            //showError();
+        }
+        @Override
+        public void gotUserTimeline(ResponseList<Status> statuses) {
+            showTimeline(statuses);
+        }
+    };
+
 }

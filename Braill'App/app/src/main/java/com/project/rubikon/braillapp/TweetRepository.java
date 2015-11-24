@@ -4,20 +4,14 @@ package com.project.rubikon.braillapp;
 
         import twitter4j.AsyncTwitter;
         import twitter4j.AsyncTwitterFactory;
-        import twitter4j.Query;
-        import twitter4j.TwitterException;
         import twitter4j.TwitterListener;
-        import twitter4j.api.SearchResourceAsync;
         import twitter4j.conf.ConfigurationBuilder;
 
-/**
- * Created by Kevin on 23/11/2015.
- */
 public class TweetRepository {
     private static TweetRepository instance;
 
     private TweetRepository() {
-
+        Log.d("TAG-RUBIKON", "TweetRepository created");
     }
 
     public static TweetRepository getInstance() {

@@ -4,7 +4,7 @@
     android:paddingRight="0dp"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.project.rubikon.braillapp.BrailleScreen"
+    tools:context="com.project.rubikon.braillapp.BrailleScreenActivity"
     android:id="@+id/braille">
 
     <ImageButton

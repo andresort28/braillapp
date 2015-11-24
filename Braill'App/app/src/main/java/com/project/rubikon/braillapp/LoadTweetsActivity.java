@@ -3,22 +3,24 @@ package com.project.rubikon.braillapp;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class CargaTweets extends AppCompatActivity {
+public class LoadTweetsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_carga_tweets);
-        cargandoTweets();
+        Log.d("TAG-RUBIKON", "LoadTweetsActivity created");
+        setContentView(R.layout.layout_load_tweets);
+        loadingTweets();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_carga_tweets, menu);
+        getMenuInflater().inflate(R.menu.menu_load_tweets, menu);
         return true;
     }
 
@@ -36,7 +38,7 @@ public class CargaTweets extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    public void cargandoTweets(){
+    public void loadingTweets(){
         //Aqui va el evento de cuando se cargan los tweets, una vez ya cargados el pasa a la activity
         // de lectura
         // Si en el evento de cargar tweets, si existen tweets para cargar el retorno es true
@@ -44,10 +46,10 @@ public class CargaTweets extends AppCompatActivity {
         // se pasa a la activity de no hay tweets.
 
         if(true){
-            Intent newfront = new Intent(CargaTweets.this, BrailleScreen.class);
+            Intent newfront = new Intent(LoadTweetsActivity.this, BrailleScreenActivity.class);
             startActivity(newfront);
         }else{
-            Intent newfront = new Intent(CargaTweets.this, NoHayTweets.class);
+            Intent newfront = new Intent(LoadTweetsActivity.this, NoTweetsActivity.class);
             startActivity(newfront);
         }
 

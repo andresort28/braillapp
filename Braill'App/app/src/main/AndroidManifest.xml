@@ -15,7 +15,7 @@
         android:screenOrientation="landscape"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".ScreenSplash"
+            android:name=".ScreenSplashActivity"
             android:label="@string/app_name"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.MyTheme" >
@@ -26,19 +26,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CargaTweets"
+            android:name=".LoadTweetsActivity"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.MyTheme" >
             android:label="@string/title_activity_carga_tweets" >
         </activity>
         <activity
-            android:name=".NoHayTweets"
+            android:name=".NoTweetsActivity"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.MyTheme" >
             android:label="@string/title_activity_no_hay_tweets" >
         </activity>
         <activity
-            android:name=".BrailleScreen"
+            android:name=".BrailleScreenActivity"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.MyTheme" >
             android:label="@string/title_activity_braille_screen" >
