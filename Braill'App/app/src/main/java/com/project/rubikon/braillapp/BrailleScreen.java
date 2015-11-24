@@ -21,9 +21,14 @@ import twitter4j.TwitterListener;
 import twitter4j.TwitterMethod;
 import com.project.rubikon.braillapp.Model.Tweet;
 
+import java.util.ArrayList;
+
 public class BrailleScreen extends AppCompatActivity {
 
     private RelativeLayout touchview;
+    private int count;
+    float x1=0, y1=0;
+    private boolean lock;
 
     private final static int[] STATE_PRESSED = {
             android.R.attr.state_pressed,
@@ -33,20 +38,21 @@ public class BrailleScreen extends AppCompatActivity {
     private static int defaultStates[];
 
     private static Tweet tweety;
-    private static String[] listaTweets= new String[20];
-    private static String segment = "100000110000100100100110100010110100110110110000";
+    private static ArrayList[] listaTweets= new ArrayList[20];
+    private String segment="1000101010001010100101101011010100001010100000110001010101";
+    int tweetCounter; //Columnas del array de arraylist que es un tweet con su lista de paginas
+    int segmentCounter;  // Filas que son las paginas de un tweet
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_braille_screen);
-
         TweetRepository.getInstance().getTimelineAsync(timelineListener); // => timelineListener
-
         touchview = (RelativeLayout) findViewById(R.id.braille);
         defaultStates = findViewById(R.id.dot1).getBackground().getState();
-
         updateBrailleScreen(segment);
+        //updateBrailleScreen((String)listaTweets[tweetCounter].get(segmentCounter));
+
 
         final View.OnClickListener clickListener = new View.OnClickListener() {
             @Override
@@ -57,43 +63,82 @@ public class BrailleScreen extends AppCompatActivity {
             }
         };
 
-        View.OnTouchListener t = new View.OnTouchListener() {
 
-            private boolean isInside = false;
+
+
+        View.OnTouchListener t = new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View view, MotionEvent event) {
 
                 int x = (int) event.getX();
                 int y = (int) event.getY();
+                count++;
 
-                for (int i = 0; i < touchview.getChildCount(); i++) {
-                    View current = touchview.getChildAt(i);
-                    if (current instanceof ImageButton) {
-                        ImageButton b = (ImageButton) current;
+                if(!lock){
+                    switch (event.getActionMasked()){
 
-                        if (!isPointWithin(x, y, b.getLeft(), b.getRight(), b.getTop(),
-                                b.getBottom())) {
-                            b.getBackground().setState(defaultStates);
+                        case MotionEvent.ACTION_DOWN:{
+                            x1 = event.getX();
+                            y1 = event.getY();
+                            break;
                         }
 
-                        if (isPointWithin(x, y, b.getLeft(), b.getRight(), b.getTop(),
-                                b.getBottom())) {
-                            b.getBackground().setState(STATE_PRESSED);
-                            if ( (int)b.getTag() == R.drawable.filled13) {
-                                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                                v.vibrate(100);
+                        case MotionEvent.ACTION_UP: {
+                            float x2 = event.getX();
+                            float y2 = event.getY();
+                            float diffX = x2 - x1;
+                            float diffY = y2 - y1;
+
+                            if(Math.abs(diffX) > Math.abs(diffY))
+                            {
+                                if(diffX > 0)
+                                    Log.e("# " + count + ":Dir", "Left");
+                                else
+                                    Log.e("# " + count + ":Dir", "Right");
                             }
+                            else
+                            {
+                                if(diffY > 0)
+                                    Log.e("# " + count + ":Dir", "Up");
+                                else
+                                    Log.e("# " + count + ":Dir", "Down");
+                            }
+                            break;
                         }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < touchview.getChildCount(); i++) {
+                        View current = touchview.getChildAt(i);
+                        if (current instanceof ImageButton) {
+                            ImageButton b = (ImageButton) current;
 
+                            if (!isPointWithin(x, y, b.getLeft(), b.getRight(), b.getTop(),
+                                    b.getBottom())) {
+                                b.getBackground().setState(defaultStates);
+                            }
+
+                            if (isPointWithin(x, y, b.getLeft(), b.getRight(), b.getTop(),
+                                    b.getBottom())) {
+                                b.getBackground().setState(STATE_PRESSED);
+                                if ( (int)b.getTag() == R.drawable.filled13) {
+                                    Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                                    v.vibrate(100);
+                                }
+                            }
+
+                        }
                     }
                 }
                 return true;
-
             };
         };
 
+
         touchview.setOnTouchListener(t);
+
     }
 
     // Esta clase interna es la encargada de manejar el callback,  tiene dos métodos para manejar la posibilidad de éxito y de error.
@@ -124,7 +169,7 @@ public class BrailleScreen extends AppCompatActivity {
         for (Status status : statuses) {
             tweets[counter] = status.getText();
             tweety = new Tweet(tweets[counter].split("http")[0].toString());
-            listaTweets[counter]=tweety.getTraduccion();
+            listaTweets[counter]=(ArrayList<String>)tweety.getTraduccion();
             Log.e("tweets: ", tweets[counter].split("http")[0].toString());
             counter++;
         }

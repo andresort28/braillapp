@@ -1,15 +1,19 @@
 package com.project.rubikon.braillapp.Model;
 
+import java.util.ArrayList;
+
 /**
  * Created by jfelipeescobart on 29/10/2015.
  */
 public class Tweet {
 
-    private String tweet, translation;
+    private String tweet;
+    private ArrayList<String> translation;
 
     public Tweet(String tweet){
         this.tweet = tweet;
-        translation=translate();
+        translation=new ArrayList<String>();
+        translate();
     }
 
     public String getTweet() {
@@ -20,30 +24,37 @@ public class Tweet {
         this.tweet = tweet;
     }
 
-    public String getTraduccion() {
+    public ArrayList<String> getTraduccion() {
         return translation;
     }
 
-    public void setTraduccion(String translation) {
+    public void setTraduccion(ArrayList<String> translation) {
         this.translation = translation;
     }
 
-    public String translate(){
+    public void translate(){
         String braille = "";
         String tweetUpperCase = tweet.toUpperCase();
         char[] characters = tweetUpperCase.toCharArray();
 
+        int counter = 0;
+
         for (int i = 0; i < characters.length; i++) {
+
 
             for (int j = 0; j < AsciiCharacter.CHARACTERS.length; j++) {
 
                 if (characters[i]==(char)AsciiCharacter.CHARACTERS[j]) {
 
                     braille += AsciiCharacter.BINARIES[j];
+
+                    if (i%8==0) {
+                        translation.add(braille);
+                        braille = "";
+                    }
                     break;
                 }
             }
         }
-        return braille;
     }
 }
