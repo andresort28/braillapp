@@ -120,7 +120,7 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
 
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                gd.onTouchEvent(event);
+                //gd.onTouchEvent(event);
                 int x = (int) event.getX();
                 int y = (int) event.getY();
                 count++;
@@ -155,6 +155,7 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
 
 
         touchview.setOnTouchListener(t);
+
 
     }
 
@@ -284,14 +285,12 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
 
 
         if(!lock){
-
-            x1 = e1.getX();
-            y1 = e1.getY();
+            float x_1 = e1.getX();
+            float y_1 = e1.getY();
             float x2 = e2.getX();
             float y2 = e2.getY();
-            float diffX = x2 - x1;
-            float diffY = y2 - y1;
-
+            float diffX = x2 - x_1;
+            float diffY = y2 - y_1;
                     if(Math.abs(diffX) > Math.abs(diffY))
                     {
                         if(diffX > 0) {
