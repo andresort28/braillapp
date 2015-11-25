@@ -40,7 +40,13 @@ public class Tweet {
             for (int j = 0; j < AsciiCharacter.CHARACTERS.length; j++) {
                 if (characters[i] == (char) AsciiCharacter.CHARACTERS[j]) {
                     braille += AsciiCharacter.BINARIES[j];
-                    if (i % 8 == 0) {
+                    if (i>0 && i % 8 == 0) {
+                        if (braille.length()<48){
+                            int missingChars = 48-braille.length();
+                            for (int k=0; k<missingChars;k++){
+                                braille+="0";
+                            }
+                        }
                         translation.add(braille);
                         braille = "";
                     }
