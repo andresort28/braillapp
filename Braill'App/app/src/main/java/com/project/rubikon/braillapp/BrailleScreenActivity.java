@@ -336,9 +336,9 @@ public class BrailleScreenActivity extends Activity implements GestureDetector.O
         Log.d("doubleTap", lock + "");
         ImageView lockImg = (ImageView) findViewById(R.id.imageView2);
         if (lock)
-            lockImg.setImageResource(R.drawable.lock);
+            lockImg.setBackgroundResource(R.drawable.lock);
         else
-            lockImg.setImageResource(R.drawable.unlock);
+            lockImg.setBackgroundResource(R.drawable.unlock);
         return true;
     }
 
