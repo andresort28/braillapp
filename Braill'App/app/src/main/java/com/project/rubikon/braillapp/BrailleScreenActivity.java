@@ -1,15 +1,12 @@
 package com.project.rubikon.braillapp;
 
 import android.content.Context;
-import android.content.Intent;
-import android.gesture.GestureOverlayView;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
-import android.view.GestureDetector.OnGestureListener;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -58,20 +55,22 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
 
         touchview = (RelativeLayout) findViewById(R.id.braille);
         defaultStates = findViewById(R.id.dot1).getBackground().getState();
-        Thread closeActivity = new Thread(new Runnable() {
+        TweetRepository.getInstance().getTimelineAsync(timelineListener); // => timelineListener
+
+        Thread esperaCargaTweets = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
 
                     Thread.sleep(10000);
-                    // Do some stuff
+                    //updateBrailleScreen((String) listaTweets[tweetCounter].get(segmentCounter));
                 } catch (Exception e) {
                     e.getLocalizedMessage();
                 }
             }
         });
-        TweetRepository.getInstance().getTimelineAsync(timelineListener); // => timelineListener
-        //updateBrailleScreen((String) listaTweets[tweetCounter].get(segmentCounter));
+        esperaCargaTweets.start();
+
         gd = new GestureDetector(this);
 
         //set the on Double tap listener
@@ -93,12 +92,12 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
                         ImageView b = (ImageView) current;
 
                         if ( lock==true){
-                            b.setBackgroundResource(R.drawable.padlock108);
-                            b.setTag(R.drawable.padlock108);
+                            b.setBackgroundResource(R.drawable.unlock);
+                            b.setTag(R.drawable.unlock);
                         }
                         else{
-                            b.setBackgroundResource(R.drawable.lock134);
-                            b.setTag(R.drawable.lock134);
+                            b.setBackgroundResource(R.drawable.lock);
+                            b.setTag(R.drawable.lock);
                         }
                     }
                 }
@@ -157,12 +156,12 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
                 int num = Integer.parseInt(idName.substring(3, idName.length()));
 
                 if ( segment.charAt(num-1) == '1'){
-                    b.setBackgroundResource(R.drawable.filled13);
-                    b.setTag(R.drawable.filled13);
+                    b.setBackgroundResource(R.drawable.punto_lleno);
+                    b.setTag(R.drawable.punto_lleno);
                 }
                 else{
-                    b.setBackgroundResource(R.drawable.blank36);
-                    b.setTag(R.drawable.blank36);
+                    b.setBackgroundResource(R.drawable.punto_vacio);
+                    b.setTag(R.drawable.punto_vacio);
                 }
             }
         }
@@ -218,39 +217,6 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
         }
     }
 
-
-    public void pasarTweet(){
-
-        // va a haber una variable bandera que va a indicar si esta la pantalla bloqueada
-        // para realizar movimientos de desplazamiento o esta desbloqueada
-        // True representa que si se pueden realizar movimientos
-
-        if(true){
-            // aqui se especifica hacia donde se dirige el movimiento
-            // dependiendo de la informacion brindada por la accion realizada por el usuario
-            // puede cambiar la informacion si va hacia arriba sigue leyendo el tweet
-            // si va hacia la izquierda lee el siguiente tweet, si va a la derecha
-            // pasa al anterior tweet y si va hacia abajo vuelve a la parte superior del tweet que
-            // esta leyendo
-            // Si al hacer un movimiento buscando un tweet nuevo no se encuentran mas tweets por leer
-            // Se cambia la bandera de Si hay mas tweets por leer a TRUE y entra al if que
-            // Cambia a la activity de cargando tweets.....
-
-
-            // Este seria el if de la bandera que indica que no hay mas tweets por leer
-            //
-            if(true){
-
-
-                Intent newfront = new Intent(BrailleScreenActivity.this, LoadTweetsActivity.class);
-                startActivity(newfront);
-            }
-
-
-            Intent newfront = new Intent(BrailleScreenActivity.this, BrailleScreenActivity.class);
-            startActivity(newfront);
-        }
-    }
 
 
     @Override
@@ -350,7 +316,7 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
                     if (isPointWithin(x, y, b.getLeft(), b.getRight(), b.getTop(),
                             b.getBottom())) {
                         b.getBackground().setState(STATE_PRESSED);
-                        if ( (int)b.getTag() == R.drawable.filled13) {
+                        if ( (int)b.getTag() == R.drawable.punto_lleno) {
                             Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                             v.vibrate(100);
                         }
