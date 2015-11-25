@@ -82,14 +82,10 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
 
             @Override
             public boolean onDoubleTap(MotionEvent e) {
-                int childCount = touchview.getChildCount();
                 lock=!lock;
                 Log.d("doubleTap", lock+"");
-                for (int i = 0; i < childCount; i++) {
-                    View current = touchview.getChildAt(i);
 
-                    if (current instanceof ImageView) {
-                        ImageView b = (ImageView) current;
+                        ImageView b = (ImageView)findViewById(R.id.imageView2);
 
                         if ( lock==true){
                             b.setBackgroundResource(R.drawable.unlock);
@@ -99,9 +95,6 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
                             b.setBackgroundResource(R.drawable.lock);
                             b.setTag(R.drawable.lock);
                         }
-                    }
-                }
-
                 return false;
             }
 
