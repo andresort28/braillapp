@@ -120,8 +120,33 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
 
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-
                 gd.onTouchEvent(event);
+                int x = (int) event.getX();
+                int y = (int) event.getY();
+                count++;
+                if(lock==true){
+                    for (int i = 0; i < touchview.getChildCount(); i++) {
+                        View current = touchview.getChildAt(i);
+                        if (current instanceof ImageButton) {
+                            ImageButton b = (ImageButton) current;
+
+                            if (!isPointWithin(x, y, b.getLeft(), b.getRight(), b.getTop(),
+                                    b.getBottom())) {
+                                b.getBackground().setState(defaultStates);
+                            }
+
+                            if (isPointWithin(x, y, b.getLeft(), b.getRight(), b.getTop(),
+                                    b.getBottom())) {
+                                b.getBackground().setState(STATE_PRESSED);
+                                if ( (int)b.getTag() == R.drawable.punto_lleno) {
+                                    Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                                    v.vibrate(100);
+                                }
+                            }
+
+                        }
+                    }
+                }
 
 
                 return true;
@@ -255,9 +280,7 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        int x = (int) e1.getX();
-        int y = (int) e1.getY();
-        count++;
+
 
 
         if(!lock){
@@ -294,30 +317,8 @@ public class BrailleScreenActivity extends AppCompatActivity  implements Gesture
 
 
         }
-        else
-        {
-            for (int i = 0; i < touchview.getChildCount(); i++) {
-                View current = touchview.getChildAt(i);
-                if (current instanceof ImageButton) {
-                    ImageButton b = (ImageButton) current;
 
-                    if (!isPointWithin(x, y, b.getLeft(), b.getRight(), b.getTop(),
-                            b.getBottom())) {
-                        b.getBackground().setState(defaultStates);
-                    }
 
-                    if (isPointWithin(x, y, b.getLeft(), b.getRight(), b.getTop(),
-                            b.getBottom())) {
-                        b.getBackground().setState(STATE_PRESSED);
-                        if ( (int)b.getTag() == R.drawable.punto_lleno) {
-                            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                            v.vibrate(100);
-                        }
-                    }
-
-                }
-            }
-        }
         return false;
     }
 
