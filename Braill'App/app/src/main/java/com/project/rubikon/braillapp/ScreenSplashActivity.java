@@ -1,7 +1,9 @@
 package com.project.rubikon.braillapp;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.CountDownTimer;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,9 +14,10 @@ import android.view.MenuItem;
 public class ScreenSplashActivity extends ActionBarActivity {
 
 
-    public static final int seconds=3;
-    public static final int miliseconds=seconds*1000;
+    public int seconds;
+    public int miliseconds;
     public static final int delay=2;
+    public MediaPlayer reproductor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +25,10 @@ public class ScreenSplashActivity extends ActionBarActivity {
         Log.d("TAG-RUBIKON", "ScreenSplashActivity created");
         setContentView(R.layout.layout_screen_splash);
         Log.d("RUBIKON", "ScreenSplashActivity created");
+        reproductor= MediaPlayer.create(this, R.raw.bienvenido);
+        reproductor.start();
+        seconds=reproductor.getDuration();
+        miliseconds=seconds;
         empezaranimacion();
     }
 
@@ -62,5 +69,26 @@ public class ScreenSplashActivity extends ActionBarActivity {
                 finish();
             }
         }.start();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        if(reproductor.isPlaying()){
+            reproductor.stop();
+            reproductor.release();
+        }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        reproductor.start();
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        reproductor.pause();
     }
 }

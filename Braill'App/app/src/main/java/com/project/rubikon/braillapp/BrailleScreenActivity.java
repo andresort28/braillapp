@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.gesture.GestureOverlayView;
+import android.media.MediaPlayer;
 import android.os.Vibrator;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,8 @@ import java.util.ArrayList;
 
 public class BrailleScreenActivity extends Activity implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
+    public MediaPlayer reproductor;
+
     private boolean tweetsLoaded = false;
     private RelativeLayout touchview;
     private int count;
@@ -56,6 +59,9 @@ public class BrailleScreenActivity extends Activity implements GestureDetector.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("TAG-RUBIKON", "BrailleScreenActivity created");
+
+        reproductor= MediaPlayer.create(this, R.raw.cargado);
+        reproductor.start();
 
         setContentView(R.layout.layout_braille_screen);
 
@@ -196,10 +202,16 @@ public class BrailleScreenActivity extends Activity implements GestureDetector.O
         lock = !lock;
         Log.d("doubleTap", lock + "");
         ImageView lockImg = (ImageView) findViewById(R.id.imageView2);
-        if (lock)
+        if (lock) {
             lockImg.setBackgroundResource(R.drawable.lock);
-        else
+            reproductor = MediaPlayer.create(this, R.raw.lectura);
+            reproductor.start();
+        }
+        else {
             lockImg.setBackgroundResource(R.drawable.unlock);
+            reproductor = MediaPlayer.create(this, R.raw.desplazamiento);
+            reproductor.start();
+        }
         return true;
     }
 
@@ -251,17 +263,25 @@ public class BrailleScreenActivity extends Activity implements GestureDetector.O
                 if (diffX > 0) {
                     prevTweet();
                     Log.d("TAG-RUBIKON", "Left");
+                    reproductor = MediaPlayer.create(this, R.raw.anterior);
+                    reproductor.start();
                 } else {
                     nextTweet();
                     Log.d("TAG-RUBIKON", "Right");
+                    reproductor = MediaPlayer.create(this, R.raw.siguiente);
+                    reproductor.start();
                 }
             } else {
                 if (diffY > 0) {
                     prevPage();
                     Log.d("TAG-RUBIKON", "Up");
+                    reproductor = MediaPlayer.create(this, R.raw.anteriorpag);
+                    reproductor.start();
                 } else {
                     nextPage();
                     Log.d("TAG-RUBIKON", "Down");
+                    reproductor = MediaPlayer.create(this, R.raw.siguientepag);
+                    reproductor.start();
                 }
 
             }
@@ -301,5 +321,26 @@ public class BrailleScreenActivity extends Activity implements GestureDetector.O
         segmentCounter = 0;
         ArrayList currentTweet = listaTweets[tweetCounter];
         updateBrailleScreen((String) currentTweet.get(segmentCounter));
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        if(reproductor.isPlaying()){
+            reproductor.stop();
+            reproductor.release();
+        }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        reproductor.start();
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        reproductor.pause();
     }
 }

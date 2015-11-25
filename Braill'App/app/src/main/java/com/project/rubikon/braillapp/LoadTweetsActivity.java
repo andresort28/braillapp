@@ -1,6 +1,8 @@
 package com.project.rubikon.braillapp;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +21,12 @@ import twitter4j.TwitterListener;
 import twitter4j.TwitterMethod;
 
 public class LoadTweetsActivity extends AppCompatActivity {
+
+    public int seconds;
+    public int miliseconds;
+    public static final int delay=2;
+    public MediaPlayer reproductor;
+
     private boolean flag= false;
     private String[] tweets = new String[20];
     @Override
@@ -26,6 +34,10 @@ public class LoadTweetsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d("TAG-RUBIKON", "LoadTweetsActivity created");
         setContentView(R.layout.layout_load_tweets);
+        reproductor= MediaPlayer.create(this, R.raw.load);
+        reproductor.start();
+        seconds=reproductor.getDuration();
+        miliseconds=seconds;
         loadingTweets();
     }
 
@@ -74,6 +86,8 @@ public class LoadTweetsActivity extends AppCompatActivity {
             Intent newfront = new Intent(LoadTweetsActivity.this, NoTweetsActivity.class);
             startActivity(newfront);
         }
+
+
     }
 
     // Esta clase interna es la encargada de manejar el callback,  tiene dos m?todos para manejar la posibilidad de ?xito y de error.
@@ -102,6 +116,39 @@ public class LoadTweetsActivity extends AppCompatActivity {
         // y pasa a la activity de lectura, si no existen tweets para cargar el retorno es false
         // se pasa a la activity de no hay tweets.
 
-        TweetRepository.getInstance().getTimelineAsync(timelineListener); // => timelineListener
+        new CountDownTimer(miliseconds, 1000){
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                TweetRepository.getInstance().getTimelineAsync(timelineListener); // => timelineListener
+            }
+        }.start();
+
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        if(reproductor.isPlaying()){
+            reproductor.stop();
+            reproductor.release();
+        }
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        reproductor.start();
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        reproductor.pause();
     }
 }
